@@ -31,7 +31,6 @@ public class Interval {
         int[] breakpoints = {0, 15, 36, 51, 100};
         int start;
         int end;
-        String answer = "Ви ввели число із проміжку числ від %d до %d";
 
         if (x >= breakpoints[0] && x < breakpoints[1]) {
             start = breakpoints[0];
@@ -47,6 +46,6 @@ public class Interval {
             end = breakpoints[4];
         }
 
-        System.out.printf((answer), start, end);
+        System.out.printf("Ви ввели число із проміжку числ від %d до %d", start, end);
     }
 }
