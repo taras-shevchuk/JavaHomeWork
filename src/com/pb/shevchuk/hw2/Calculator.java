@@ -48,7 +48,7 @@ public class Calculator {
                     }
                 } catch (ArithmeticException exception) {
                     if (y == 0) {
-                        System.out.println("Помилка: ділення на нуль неможливе");
+                        System.out.print("Помилка: ділення на нуль неможливе");
                         return;
                     }
                 }

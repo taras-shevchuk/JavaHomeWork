@@ -23,7 +23,8 @@ public class Interval {
 
                 System.out.print("\n");
             } catch (NumberFormatException exception) {
-                System.out.println("\nВи ввели значення, що не підпадає у жоден із очікуваних проміжків числ");
+                System.out.print("\n");
+                System.out.print("Ви ввели значення, що не входить у жоден із очікуваних проміжків числ");
                 return;
             }
         }
