@@ -22,6 +22,8 @@ public class Calculator {
 
             System.out.println("Тепер, будь ласка, друге ціле число");
             y = Integer.parseInt(reader.readLine());
+
+            System.out.print("\n");
         }
 
         long result = 0L;
@@ -54,7 +56,7 @@ public class Calculator {
                 break;
         }
 
-        System.out.printf("\n%d %s %d = ", x, sign, y);
+        System.out.printf("%d %s %d = ", x, sign, y);
 
         if (floatingResult != 0) {
             System.out.print(floatingResult);
