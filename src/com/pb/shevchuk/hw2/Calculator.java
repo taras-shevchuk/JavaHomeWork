@@ -6,22 +6,22 @@ import java.io.InputStreamReader;
 
 public class Calculator {
     public static void main(String[] args) throws IOException {
-        int operand1;
-        int operand2;
+        int x;
+        int y;
         String sign;
 
         try(
-                InputStreamReader in = new InputStreamReader(System.in);
-                BufferedReader reader = new BufferedReader(in)
+                InputStreamReader inStream = new InputStreamReader(System.in);
+                BufferedReader reader = new BufferedReader(inStream)
         ) {
             System.out.println("Введіть, будь ласка, ціле число");
-            operand1 =  Integer.parseInt(reader.readLine());
+            x =  Integer.parseInt(reader.readLine());
 
             System.out.println("Вкажіть знак арифметичної операції: +, -, * або /");
             sign = reader.readLine();
 
             System.out.println("Тепер, будь ласка, друге ціле число");
-            operand2 = Integer.parseInt(reader.readLine());
+            y = Integer.parseInt(reader.readLine());
         }
 
         long result = 0L;
@@ -29,23 +29,23 @@ public class Calculator {
 
         switch (sign) {
             case "+":
-                result = (long) operand1 + operand2;
+                result = (long) x + y;
                 break;
             case "-":
-                result = (long) operand1 - operand2;
+                result = (long) x - y;
                 break;
             case "*":
-                result = (long) operand1 * operand2;
+                result = (long) x * y;
                 break;
             case "/":
                 try {
-                    if (operand1 % operand2 == 0) {
-                        result = operand1 / operand2;
+                    if (x % y == 0) {
+                        result = x / y;
                     } else {
-                        floatingResult = (double) operand1 / operand2;
+                        floatingResult = (double) x / y;
                     }
                 } catch (ArithmeticException exception) {
-                    if (operand2 == 0) {
+                    if (y == 0) {
                         System.out.println("Помилка: ділення на нуль неможливе");
                         return;
                     }
@@ -54,10 +54,12 @@ public class Calculator {
                 break;
         }
 
+        System.out.printf("\n%d %s %d = ", x, sign, y);
+
         if (floatingResult != 0) {
-            System.out.print("Результат: " + floatingResult);
+            System.out.print(floatingResult);
         } else {
-            System.out.print("Результат: " + result);
+            System.out.print(result);
         }
     }
 }
