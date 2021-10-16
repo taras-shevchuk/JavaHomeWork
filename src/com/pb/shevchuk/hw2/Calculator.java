@@ -17,7 +17,7 @@ public class Calculator {
             System.out.println("Введіть, будь ласка, ціле число");
             x =  Integer.parseInt(reader.readLine());
 
-            System.out.println("Вкажіть знак арифметичної операції: +, -, * або /");
+            System.out.println("Вкажіть знак арифметичної дії: +, -, * або /");
             sign = reader.readLine();
 
             System.out.println("Тепер, будь ласка, друге ціле число");
@@ -54,6 +54,9 @@ public class Calculator {
                 }
 
                 break;
+            default:
+                System.out.print("Ви вказали помилковий арифметичний знак");
+                return;
         }
 
         System.out.printf("%d %s %d = ", x, sign, y);
