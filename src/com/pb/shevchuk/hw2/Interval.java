@@ -6,18 +6,19 @@ import java.io.InputStreamReader;
 
 public class Interval {
     public static void main(String[] args) throws IOException {
-        byte x;
+        int[] breakpoints = {0, 15, 36, 51, 100};
+        int x;
 
         try(
                 InputStreamReader inStream = new InputStreamReader(System.in);
                 BufferedReader reader = new BufferedReader(inStream)
         ) {
-            System.out.println("Введіть, будь ласка, ціле число");
+            System.out.println("Введіть, будь ласка, ціле число від 0 до 100");
 
             try {
                 x = Byte.parseByte(reader.readLine());
 
-                if (x < 0 || x > 100) {
+                if (x < breakpoints[0] || x > breakpoints[breakpoints.length - 1]) {
                     throw new NumberFormatException();
                 }
 
@@ -29,22 +30,18 @@ public class Interval {
             }
         }
 
-        int[] breakpoints = {0, 15, 36, 51, 100};
-        int start;
-        int end;
+        int start = 0;
+        int end = 0;
 
-        if (x >= breakpoints[0] && x < breakpoints[1]) {
-            start = breakpoints[0];
-            end = breakpoints[1] - 1;
-        } else if (x >= breakpoints[1] && x < breakpoints[2]) {
-            start = breakpoints[1];
-            end = breakpoints[2] - 1;
-        } else if (x >= breakpoints[2] && x < breakpoints[3]) {
-            start = breakpoints[2];
-            end = breakpoints[3] - 1;
-        } else {
-            start = breakpoints[3];
-            end = breakpoints[4];
+        for (int i = 1; i < breakpoints.length - 1; i++) {
+            if (x < breakpoints[i]) {
+                start = breakpoints[i - 1];
+                end = breakpoints[i] - 1;
+                break;
+            } else {
+                start = breakpoints[breakpoints.length - 2];
+                end = breakpoints[breakpoints.length - 1];
+            }
         }
 
         System.out.printf("Ви ввели число із проміжку числ від %d до %d", start, end);
