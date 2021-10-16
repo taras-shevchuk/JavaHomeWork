@@ -16,7 +16,7 @@ public class Interval {
             System.out.println("Введіть, будь ласка, ціле число від 0 до 100");
 
             try {
-                x = Byte.parseByte(reader.readLine());
+                x = Integer.parseInt(reader.readLine());
 
                 if (x < breakpoints[0] || x > breakpoints[breakpoints.length - 1]) {
                     throw new NumberFormatException();
