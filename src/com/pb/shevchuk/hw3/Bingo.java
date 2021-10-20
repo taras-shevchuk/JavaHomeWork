@@ -3,12 +3,14 @@ package com.pb.shevchuk.hw3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Random;
 
 public class Bingo {
     public static void main(String[] args) throws IOException {
-        int x = (int) Math.floor(Math.random() * 101);
+        int x = (new Random()).nextInt(101);
+//      int x = (int) Math.floor(Math.random() * 101);
 
-        System.out.println("Спробуй вгадати загадане ціле число від 0 до 100.");
+        System.out.println("Спробуй вгадати загадане ціле число");
         System.out.println("Якщо бажаєте припинити гру, введіть \"stop\"");
 
         String answer;
@@ -23,7 +25,7 @@ public class Bingo {
 
                 if (answer.equals("stop")) {
                     System.out.println("Гру завершено");
-                    return;
+                    break;
                 }
 
                 int y;
