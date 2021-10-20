@@ -9,7 +9,7 @@ public class Array {
         int[] array = new int[10];
         int sum = 0;
         int sumPositive = 0;
-        StringBuilder arrayToString= new StringBuilder();
+        StringBuilder arrayToString = new StringBuilder();
 
         System.out.printf("Пропонуємо ввести масив цілих числ, потрібна кількість елементів - %d\n", array.length);
 
