@@ -3,16 +3,15 @@ package com.pb.shevchuk.hw3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 public class Array {
     public static void main(String[] args) throws IOException {
         int[] array = new int[10];
-        int n = array.length;
         int sum = 0;
         int sumPositive = 0;
+        StringBuilder arrayToString= new StringBuilder();
 
-        System.out.printf("Пропонуємо вам ввести масив цілих числ, кількість елементів - %d\n", n);
+        System.out.printf("Пропонуємо ввести масив цілих числ, потрібна кількість елементів - %d\n", array.length);
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             for (int i = 0; i < array.length; i++) {
@@ -22,12 +21,16 @@ public class Array {
                 array[i] = x;
                 sum += x;
                 sumPositive += Math.max(x, 0);
+                arrayToString.append((i == 0) ? x : (", " + x));
             }
         }
 
-        System.out.println("\nВи ввели наступний масив:" + Arrays.toString(array));
+        System.out.printf("\nВи ввели наступний масив: [%s]\n", arrayToString);
         System.out.println("Сума усіх елементів масиву: " + sum);
         System.out.println("Сума позитивних елементів масиву: " + sumPositive);
+
+        int n = array.length;
+        StringBuilder sortedArray = new StringBuilder();
 
         do {
             int newN = 0;
@@ -43,9 +46,10 @@ public class Array {
                 }
             }
 
+            sortedArray.insert(0, ", " + array[newN]);
             n = newN;
         } while (n > 1);
 
-        System.out.println("Відсортований масив: " + Arrays.toString(array));
+        System.out.printf("Відсортований масив: [%s]\n", sortedArray.insert(0, array[0]));
     }
 }
