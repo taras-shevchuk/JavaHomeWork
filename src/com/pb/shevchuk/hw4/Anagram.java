@@ -9,10 +9,14 @@ public class Anagram {
     public static void main(String[] args) throws IOException {
         String[] lines = new String[2];
 
-//        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            lines[0] = "Аз есмь строка, живу я, мерой остр";     // reader.readLine();
-            lines[1] = "За семь морей ростка я вижу рост.";     // reader.readLine();
-//        }
+        System.out.println("Введіть, будь ласка, по черзі два текстових рядки\n");
+
+        try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+            lines[0] = reader.readLine();
+            lines[1] = reader.readLine();
+        }
+
+        System.out.println();
 
         char[][] arrays = new char[2][];
 
@@ -23,7 +27,8 @@ public class Anagram {
         }
 
         if (arrays[0].length != arrays[1].length) {
-            System.out.println("diff");
+            System.out.println("Рядки не є анаграмами");
+            return;
         }
 
         for (char[] array : arrays) {
@@ -31,7 +36,9 @@ public class Anagram {
         }
 
         if (Arrays.equals(arrays[0], arrays[1])) {
-            System.out.println("eqvls");
+            System.out.println("Рядки є анаграмами");
+        } else {
+            System.out.println("Рядки не є анаграмами");
         }
     }
 }
