@@ -10,6 +10,8 @@ public class CapitalLetter {
     public static void main(String[] args) throws IOException {
         String line;
 
+        System.out.println("Введіть, будь ласк, рядок тексту\n");
+
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
             line = reader.readLine();
         }
