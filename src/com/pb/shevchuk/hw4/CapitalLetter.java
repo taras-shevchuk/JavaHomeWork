@@ -16,13 +16,16 @@ public class CapitalLetter {
             line = reader.readLine();
         }
 
-        String[] words = line.split(" ");
+        System.out.println(capitalize(line));
+    }
+
+    static String capitalize(String text) {
+        String[] words = text.split(" ");
 
         for (int i = 0; i < words.length; i++) {
             words[i] = StringUtils.capitalize(words[i]);
         }
 
-        String capitalizedLine = String.join(" ", words);
-        System.out.println(capitalizedLine);
+        return String.join(" ", words);
     }
 }
