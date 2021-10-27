@@ -21,9 +21,7 @@ public class Anagram {
         char[][] arrays = new char[2][];
 
         for (int i = 0; i < lines.length; i++) {
-            lines[i] = lines[i].replaceAll("[^a-zA-Zа-яА-Я]", "");
-            lines[i] = lines[i].toLowerCase();
-            arrays[i] = lines[i].toCharArray();
+            arrays[i] = getCharArray(lines[i]);
         }
 
         if (arrays[0].length != arrays[1].length) {
@@ -40,5 +38,11 @@ public class Anagram {
         } else {
             System.out.println("Рядки не є анаграмами");
         }
+    }
+
+    static char[] getCharArray(String text) {
+        text = text.replaceAll("[^a-zA-Zа-яА-Я]", "");
+        text = text.toLowerCase();
+        return text.toCharArray();
     }
 }
