@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class Bingo {
     public static void main(String[] args) throws IOException {
+//      int x = (int) (Math.random() * 101);
         int x = (new Random()).nextInt(101);
-//      int x = (int) Math.floor(Math.random() * 101);
 
         System.out.println("Спробуй вгадати загадане ціле число");
         System.out.println("Якщо бажаєте припинити гру, введіть \"stop\"");
