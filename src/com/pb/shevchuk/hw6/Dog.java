@@ -27,20 +27,27 @@ public class Dog extends Animal {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Dog dog = (Dog) o;
-        return Objects.equals(getAlias(), dog.getAlias())
+
+        return Objects.equals(getAlias(), alias)
                 && Objects.equals(getFood(), dog.getFood())
                 && Objects.equals(getLocation(), dog.getLocation());
     }
 
     @Override
     public String toString() {
-        return "Собака {" +
-                "\tкличка: " + getAlias() +
-                "\tїжа: " + getFood() +
-                "\tмісцевість: " + getLocation() +
+        return "Собака {\n" +
+                    "\tкличка: " + getAlias() + "\n" +
+                    "\tїжа: " + getFood() + "\n" +
+                    "\tмісцевість: " + getLocation() + "\n" +
                 '}';
     }
 

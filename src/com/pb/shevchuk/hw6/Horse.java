@@ -27,16 +27,32 @@ public class Horse extends Animal {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Horse horse = (Horse) o;
-        return Objects.equals(getSpeed(), horse.getSpeed())
+
+        return Objects.equals(getSpeed(), speed)
                 && Objects.equals(getFood(), horse.getFood())
                 && Objects.equals(getLocation(), horse.getLocation());
     }
 
     public int getSpeed() {
         return speed;
+    }
+
+    @Override
+    public String toString() {
+        return "Кінь {\n" +
+                    "\tїжа: " + getFood() + "\n" +
+                    "\tмісцевість: " + getLocation() + "\n" +
+                    "\tшвидкість: " + getSpeed() + "\n" +
+                '}';
     }
 
     public void setSpeed(int speed) {
