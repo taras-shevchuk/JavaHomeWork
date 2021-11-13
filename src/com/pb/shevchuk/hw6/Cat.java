@@ -27,28 +27,24 @@ public class Cat extends Animal {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)  {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null) return false;
+        if (getClass() != o.getClass()) return false;
 
         Cat cat = (Cat) o;
 
-        return Objects.equals(getLives(), lives)
-                && Objects.equals(getFood(), cat.getFood())
-                && Objects.equals(getLocation(), cat.getLocation());
+        return Objects.equals(getLives(), cat.getLives())
+            && Objects.equals(getFood(), cat.getFood())
+            && Objects.equals(getLocation(), cat.getLocation());
     }
 
     @Override
     public String toString() {
         return "Кіт {\n" +
-                    "\tїжа: " + getFood() + "\n" +
-                    "\tмісцевість: " + getLocation() + "\n" +
-                    "\tкількість життів: " + getLives() + "\n" +
-                '}';
+                   "\tїжа: " + getFood() + "\n" +
+                   "\tмісцевість: " + getLocation() + "\n" +
+                   "\tкількість життів: " + getLives() + "\n" +
+               '}';
     }
 
     public int getLives() {
