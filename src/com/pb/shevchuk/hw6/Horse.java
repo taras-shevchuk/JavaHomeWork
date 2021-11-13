@@ -20,26 +20,27 @@ public class Horse extends Animal {
         System.out.println("Кінь їсть " + getFood());
     }
 
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(getFood(), getLocation(), getSpeed());
+        return Objects.hash(super.hashCode(), getSpeed());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Horse horse = (Horse) o;
-
-        return Objects.equals(getSpeed(), horse.getSpeed())
-            && Objects.equals(getFood(), horse.getFood())
-            && Objects.equals(getLocation(), horse.getLocation());
-    }
-
-    public int getSpeed() {
-        return speed;
+        return Objects.equals(speed, horse.getSpeed());
     }
 
     @Override
@@ -49,9 +50,5 @@ public class Horse extends Animal {
                    "\tмісцевість: " + getLocation() + "\n" +
                    "\tшвидкість: " + getSpeed() + "\n" +
                '}';
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 }

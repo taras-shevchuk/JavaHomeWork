@@ -1,5 +1,7 @@
 package com.pb.shevchuk.hw6;
 
+import java.util.Objects;
+
 public class Animal {
     private String food;
     private String location;
@@ -35,5 +37,18 @@ public class Animal {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Animal animal = (Animal) o;
+        return Objects.equals(food, animal.food) && Objects.equals(location, animal.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(food, location);
     }
 }

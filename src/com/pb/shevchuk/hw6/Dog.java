@@ -20,22 +20,26 @@ public class Dog extends Animal {
         System.out.println("Собака їсть " + getFood());
     }
 
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(getFood(), getLocation(), getAlias());
+        return Objects.hash(super.hashCode(), getAlias());
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
         Dog dog = (Dog) o;
-
-        return Objects.equals(getAlias(), dog.getAlias())
-            && Objects.equals(getFood(), dog.getFood())
-            && Objects.equals(getLocation(), dog.getLocation());
+        return Objects.equals(alias, dog.getAlias());
     }
 
     @Override
@@ -45,13 +49,5 @@ public class Dog extends Animal {
                    "\tїжа: " + getFood() + "\n" +
                    "\tмісцевість: " + getLocation() + "\n" +
                '}';
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
     }
 }
