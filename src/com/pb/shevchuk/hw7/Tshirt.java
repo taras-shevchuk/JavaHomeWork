@@ -7,12 +7,10 @@ public class Tshirt extends Clothes implements Clothes.ManClothes, Clothes.Woman
     }
 
     public void dressMan() {
-        System.out.println("Чоловічий одяг:");
         dress();
     }
 
     public void dressWoman() {
-        System.out.println("Жіночий одяг:");
         dress();
     }
 }
