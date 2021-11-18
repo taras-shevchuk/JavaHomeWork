@@ -50,7 +50,7 @@ public class OnlineShop {
 
                     System.out.print(exception.getMessage());
 
-                    if (signInAttempts == 3) {
+                    if (signInAttempts >= 3) {
 
                         System.out.print("Акаунт заблоковано");
                     }
