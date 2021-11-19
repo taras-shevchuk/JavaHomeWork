@@ -73,7 +73,7 @@ public class Auth {
         System.out.println();
 
         if (
-                !(this.login.equals(login)
+                !(this.login.equalsIgnoreCase(login)
                         && this.password.equals(password))
         ) {
 
