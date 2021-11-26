@@ -3,7 +3,6 @@ package com.pb.shevchuk.hw10;
 public class Main {
 
     public static void main(String[] args) {
-
         {
             NumBox<Integer> integerBox = new NumBox<>(5);
 
