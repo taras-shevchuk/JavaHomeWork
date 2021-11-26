@@ -4,9 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.*;
@@ -35,44 +33,29 @@ public class FileNumbers {
 
     public static void main(String[] args) {
 
-        FileNumbers fn = new FileNumbers();
+        LOGGER.entering(FileNumbers.class.getName(), "main");
 
+        FileNumbers fn = new FileNumbers();
         fn.createNumbersFile();
         fn.createOddNumbersFile();
+
+        LOGGER.exiting(FileNumbers.class.getName(), "main");
     }
 
     public void createNumbersFile() {
-
-        final String FILE_NAME = "src/com/pb/shevchuk/hw9/numbers.txt";
-
-        Path numbersFile;
-
-        try {
-            LOGGER.log(Level.INFO, "Створюємо файл numbersFile");
-            numbersFile = Files.createFile(Paths.get(FILE_NAME));
-
-        } catch(FileAlreadyExistsException exception) {
-
-            LOGGER.throwing(getClass().getName(), "createNubersFile", exception);
-
-            LOGGER.log(Level.WARNING, "Файл уже існує. Створюємо об'єкт класу Path");
-            numbersFile = Paths.get(FILE_NAME);
-        } catch (Exception exception) {
-            LOGGER.throwing(getClass().getName(), "createNumbersFile", exception);
-            LOGGER.log(Level.SEVERE, "Трапилась помилка");
-            return;
-        }
-
-        try(BufferedWriter writer = Files.newBufferedWriter(numbersFile, StandardCharsets.UTF_8)) {
+        try(
+                BufferedWriter writer = Files.newBufferedWriter(
+                        Paths.get("src/com/pb/shevchuk/hw9/numbers.txt"),
+                        StandardCharsets.UTF_8
+                )
+        ) {
 
             Random random = new Random();
+
+            LOGGER.log(Level.INFO, "створюємо пустий масив строк");
             String[] array = new String[10];
 
-            LOGGER.log(Level.INFO, "Створюємо пустий масив строк");
-            LOGGER.log(Level.INFO, "Заповнюємо масив випадковими числами");
-            LOGGER.log(Level.INFO, "Об'єднуємо масив у строку");
-            LOGGER.log(Level.INFO, "Записуємо строку у файл");
-
+            LOGGER.log(Level.INFO, "Заповнюємо масив, об'єднуємо у строку, записуємо у файл");
             for (int i = 0; i < 10; i++) {
 
                 for (int j = 0; j < array.length; j++) {
@@ -85,42 +68,27 @@ public class FileNumbers {
 
                 writer.write(line);
                 writer.newLine();
+
+                LOGGER.log(Level.FINER, "строка = " + (i + 1));
             }
         } catch (IOException exception) {
+
             LOGGER.throwing(getClass().getName(), "createNumbersFile", exception);
-            LOGGER.log(Level.SEVERE, "Трапилась помилка");
+            LOGGER.log(Level.SEVERE, "трапилась помилка");
         }
     }
 
     public void createOddNumbersFile() {
+        try (
+                BufferedWriter writer = Files.newBufferedWriter(
+                        Paths.get("src/com/pb/shevchuk/hw9/odd-numbers.txt"),
+                        StandardCharsets.UTF_8
+                )
+        ) {
+            LOGGER.log(Level.INFO, "зчитуємо строки із випадковими числами");
+            List<String> lines = Files.readAllLines(Paths.get("src/com/pb/shevchuk/hw9/numbers.txt"));
 
-        final String FILE_NAME_NUMBERS = "src/com/pb/shevchuk/hw9/numbers.txt";
-        final String FILE_NAME_ODD_NUMBERS = "src/com/pb/shevchuk/hw9/odd-numbers.txt";
-
-        Path oddNumbersFile;
-
-        try {
-            LOGGER.log(Level.INFO, "Створюємо файл oddNumbersFile");
-            oddNumbersFile = Files.createFile(Paths.get(FILE_NAME_ODD_NUMBERS));
-
-        } catch (FileAlreadyExistsException exception) {
-
-            LOGGER.throwing(getClass().getName(), "createNubersFile", exception);
-
-            LOGGER.log(Level.WARNING, "Файл уже існує. Створюємо об'єкт класу Path");
-            oddNumbersFile = Paths.get(FILE_NAME_ODD_NUMBERS);
-        } catch (Exception exception) {
-            LOGGER.throwing(getClass().getName(), "createOddNumbersFile", exception);
-            LOGGER.log(Level.SEVERE, "Трапилась помилка");
-            return;
-        }
-
-        try (BufferedWriter writer = Files.newBufferedWriter(oddNumbersFile, StandardCharsets.UTF_8)) {
-
-            LOGGER.log(Level.INFO, "Зчитуємо усі строки файлу із випадковими числами");
-            List<String> lines = Files.readAllLines(Paths.get(FILE_NAME_NUMBERS));
-
-            LOGGER.log(Level.INFO, "Перебираємо строки, заміняємо у них парні числа на нулі, записуємо у інший файл");
+            LOGGER.log(Level.INFO, "заміняємо парні числа на нулі, записуємо у інший файл");
             for (int i = 0; i < lines.size(); i++) {
 
                 String line = lines.get(i);
@@ -133,7 +101,7 @@ public class FileNumbers {
             }
         } catch (Exception exception) {
             LOGGER.throwing(getClass().getName(), "createOddNumbersFile", exception);
-            LOGGER.log(Level.SEVERE, "Трапилась помилка");
+            LOGGER.log(Level.SEVERE, "трапилась помилка");
         }
     }
 }
