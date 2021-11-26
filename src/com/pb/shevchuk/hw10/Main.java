@@ -13,11 +13,11 @@ public class Main {
             integerBox.add(-14);
 
             System.out.println(integerBox);
-            System.out.println(integerBox.get(2));
-            System.out.println(integerBox.length());
-            System.out.println(integerBox.average());
-            System.out.println(integerBox.sum());
-            System.out.println(integerBox.max());
+            System.out.printf("елемент № %d = %d\n", 2, integerBox.get(2));
+            System.out.println("довжина масиву = " + integerBox.length());
+            System.out.println("середнє значення = " + integerBox.average());
+            System.out.println("сума усіх елементів = " + (int) integerBox.sum());
+            System.out.println("максимальне знаяення = " + integerBox.max());
         }
 
         System.out.println();
@@ -32,11 +32,11 @@ public class Main {
             floatBox.add(-.5f);
 
             System.out.println(floatBox);
-            System.out.println(floatBox.get(2));
-            System.out.println(floatBox.length());
-            System.out.println(floatBox.average());
-            System.out.println(floatBox.sum());
-            System.out.println(floatBox.max());
+            System.out.printf("елемент № %d = %.2f\n", 3, floatBox.get(3));
+            System.out.println("довжина масиву = " + floatBox.length());
+            System.out.printf("середнє значення = %.2f\n", floatBox.average());
+            System.out.printf("сума усіх елементів = %.2f\n", floatBox.sum());
+            System.out.printf("максимальне знаяення = %.2f\n", floatBox.max());
         }
     }
 }
