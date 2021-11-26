@@ -32,11 +32,11 @@ public class Main {
             floatBox.add(-.5f);
 
             System.out.println(floatBox);
-            System.out.printf("елемент № %d = %.2f\n", 3, floatBox.get(3));
+            System.out.printf("елемент № %d = %.4f\n", 3, floatBox.get(3));
             System.out.println("довжина масиву = " + floatBox.length());
-            System.out.printf("середнє значення = %.2f\n", floatBox.average());
-            System.out.printf("сума усіх елементів = %.2f\n", floatBox.sum());
-            System.out.printf("максимальне знаяення = %.2f\n", floatBox.max());
+            System.out.printf("середнє значення = %.4f\n", floatBox.average());
+            System.out.printf("сума усіх елементів = %.4f\n", floatBox.sum());
+            System.out.printf("максимальне знаяення = %.4f\n", floatBox.max());
         }
     }
 }
