@@ -4,32 +4,40 @@ public class Main {
 
     public static void main(String[] args) {
 
-        NumBox<Integer> nbI = new NumBox<>(5);
+        {
+            NumBox<Integer> integerBox = new NumBox<>(5);
 
-        nbI.add(5);
-        nbI.add(1);
-        nbI.add(7);
-        nbI.add(9);
+            integerBox.add(5);
+            integerBox.add(1);
+            integerBox.add(7);
+            integerBox.add(9);
+            integerBox.add(-14);
 
-        System.out.println(nbI.get(2));
-        System.out.println(nbI.length());
-        System.out.println(nbI.average());
-        System.out.println(nbI.sum());
-        System.out.println(nbI.max());
+            System.out.println(integerBox);
+            System.out.println(integerBox.get(2));
+            System.out.println(integerBox.length());
+            System.out.println(integerBox.average());
+            System.out.println(integerBox.sum());
+            System.out.println(integerBox.max());
+        }
 
         System.out.println();
 
-        NumBox<Float> nbF = new NumBox<>(5);
+        {
+            NumBox<Float> floatBox = new NumBox<>(5);
 
-        nbF.add(5f);
-        nbF.add(1f);
-        nbF.add(7.4562f);
-        nbF.add(0f);
+            floatBox.add(5f);
+            floatBox.add(1f);
+            floatBox.add(7.4562f);
+            floatBox.add(0f);
+            floatBox.add(-.5f);
 
-        System.out.println(nbF.get(2));
-        System.out.println(nbF.length());
-        System.out.println(nbF.average());
-        System.out.println(nbF.sum());
-        System.out.println(nbF.max());
+            System.out.println(floatBox);
+            System.out.println(floatBox.get(2));
+            System.out.println(floatBox.length());
+            System.out.println(floatBox.average());
+            System.out.println(floatBox.sum());
+            System.out.println(floatBox.max());
+        }
     }
 }
