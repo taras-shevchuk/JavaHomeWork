@@ -1,5 +1,7 @@
 package com.pb.shevchuk.hw10;
 
+import java.util.Arrays;
+
 public class NumBox<T extends Number> {
 
     private final T[] array;
@@ -50,16 +52,24 @@ public class NumBox<T extends Number> {
 
     public T max() {
 
-        T max = null;
+        if (array[0] == null) {
+            return null;
+        }
+
+        T max = array[0];
 
         for (int i = 1; i < currLength; i++) {
 
-            T prev = array[i - 1];
-            T curr = array[i];
-
-            max = (prev.doubleValue() < curr.doubleValue()) ? curr : prev;
+            if (array[i].doubleValue() > max.doubleValue()) {
+                max = array[i];
+            }
         }
 
         return max;
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(array);
     }
 }
