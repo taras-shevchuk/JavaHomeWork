@@ -7,57 +7,61 @@ import java.util.*;
 
 public class PhoneBook {
     private static final List<Contact> contacts = new ArrayList<>();
+    public static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws Exception {
         PhoneBook phoneBook = new PhoneBook();
 
-        try (
-                InputStreamReader inStream = new InputStreamReader(System.in);
-                BufferedReader reader = new BufferedReader(inStream)
-        ) {
-            System.out.println("Вітаємо вас");
+        System.out.println("Вітаємо вас");
 
-            if (contacts.isEmpty()) {
-                System.out.println("У телефонній книзі поки немає контактів. Яку дію бажаєте виконати?");
-                System.out.println("a - додати контакт");
-                System.out.println("l - завантажити дані зі файлу");
+        while (contacts.isEmpty()) {
+            System.out.println("У телефонній книзі поки немає контактів. Яку дію бажаєте виконати?");
+            System.out.println("a - додати контакт");
+            System.out.println("l - завантажити дані зі файлу");
 
-                switch (reader.readLine().toLowerCase().trim()) {
-                    case "a":
-                        phoneBook.addContact(reader);
+            switch (reader.readLine().toLowerCase().trim()) {
+                case "add":
+                    try {
+                        phoneBook.add();
+                    } catch (IllegalArgumentException exception) {
+                        System.out.println(exception.getMessage());
+                    }
 
-                        for (Contact contact : contacts) {
-                            System.out.println(contact);
-                        }
+                    for (Contact contact : contacts) {
+                        System.out.println(contact);
+                    }
 
-                        break;
-                    case "l":
-                        phoneBook.removeContact("taras");
-                }
+                    break;
+                case "l":
+                    break;
             }
+        }
 
-//            while (true) {
-//                switch (reader.readLine().toLowerCase().trim()) {
-//                    case "a":
-//                        phoneBook.addContact(reader);
-//                        break;
-//                    case "r":
-//                        phoneBook.removeContact("taras");
-//                }
-//            }
+        while (true) {
+            switch (reader.readLine().toLowerCase().trim()) {
+                case "add":
+                    phoneBook.add();
+                    break;
+                case "search":
+                    phoneBook;
+                case "remove":
+                    phoneBook.remove("taras");
+            }
         }
     }
 
-    private void addContact(BufferedReader reader) throws Exception {
+    private void add() throws Exception {
         HashMap<String, String> data = new HashMap<>();
-        String name = "";
         List<String> phones = new ArrayList<>();
 
+        data.put("name", "");
+        data.put("birthDate", "");
+        data.put("address", "");
+
         while (true) {
-            if (name.equals("")) {
+            if (data.get("name").equals("")) {
                 System.out.println("Введіть, будь ласка, ваше ім'я");
-                name = reader.readLine();
-                data.put("name", name);                                              //reader.readLine();
+                data.put("name", reader.readLine());                                              //reader.readLine();
             }
 
             do {
@@ -72,14 +76,26 @@ public class PhoneBook {
                 System.out.println("Бажаєте додати ще один номер телефону? (yes / no)");
             } while (!reader.readLine().trim().equalsIgnoreCase("no"));
 
-            data.put("birthDate", reader.readLine());
-            data.put("address", reader.readLine());
-            LocalDate birthDate = LocalDate.parse(
-                    data.get("birthDate"),
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            );
+            if (data.get("birthDate").equals("")) {
+                System.out.println("Введіть, будь ласка, дату народження");
+                data.put("birthDate", reader.readLine());
+            }
 
-            if (name.equals("") || phones.isEmpty()) {
+            if (data.get("address").equals("")) {
+                System.out.println("Введіть, будь ласка, вашу адресу");
+                data.put("address", reader.readLine());
+            }
+
+            LocalDate birthDate = null;
+
+            if (!data.get("birthDate").equals("")) {
+                birthDate = LocalDate.parse(
+                        data.get("birthDate"),
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                );
+            }
+
+            if (data.get("name").equals("") || phones.isEmpty()) {
                 throw new IllegalArgumentException(
                         "На жаль, не зазначено жодного номеру телефону або імені контакту - ці дані обов'язкові"
                 );
@@ -96,7 +112,11 @@ public class PhoneBook {
         }
     }
 
-    public void removeContact(String name) {
+    public void search(String field, String value) {
+
+    }
+
+    public void remove(String name) {
         Contact con = contacts.get(1);
         con.name = "dot";
         contacts.set(1, con);
@@ -106,7 +126,7 @@ public class PhoneBook {
     public class Contact {
         private String name;
         private LocalDate birthDate;
-        private List<String> phones;
+        private final List<String> phones;
         private String address;
         private LocalDate edited;
 
@@ -115,6 +135,7 @@ public class PhoneBook {
             this.birthDate = birthDate;
             this.phones = phones;
             this.address = address;
+            edited = LocalDate.now();
         }
 
         public String getName() {
