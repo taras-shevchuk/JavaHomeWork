@@ -8,118 +8,141 @@ import java.util.*;
 
 public class PhoneBook {
     private static final List<Contact> contacts = new ArrayList<>();
+    private static final List<Contact> buffer = new ArrayList<>();
     public static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    private final List<Contact> buffer = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         PhoneBook phoneBook = new PhoneBook();
+        System.out.println("Вітаємо вас! У телефонній книзі поки немає контактів");
+        System.out.println();
 
-        System.out.println("Вітаємо вас");
-
-        while (contacts.isEmpty()) {
-            System.out.println("У телефонній книзі поки немає контактів. Яку дію бажаєте виконати?");
-            System.out.println("add - додати контакт");
-            System.out.println("load - завантажити дані зі файлу");
-
-            switch (reader.readLine().toLowerCase().trim()) {
-                case "add":
-                    try {
-                        phoneBook.add("taras", Collections.singletonList("3700"), "29/08/1995", "ternopil");
-                    } catch (IllegalArgumentException exception) {
-                        System.out.println(exception.getMessage());
-                    }
-
-                    System.out.println(contacts);
-
-                    break;
-                case "l":
-                    break;
-            }
-        }
+//        while (contacts.isEmpty()) {
+//        }
 
         while (true) {
-            System.out.println("Яку дію бажаєте виконати?");
-            System.out.println("add - додати контакт");
-            System.out.println("search - пошук контактів");
-            System.out.println("remove - видалити контакт");
-
-            switch (reader.readLine().toLowerCase().trim()) {
-                case "add":
-                    phoneBook.add("petro", Arrays.asList("7737", "911"), "29/06/2000", "ternopil");
+            switch (getAction(Action.ADD, Action.SEARCH)) {
+                case ADD:
+                    phoneBook.add("taras", "3700", "29/08/1995", "ternopil");
                     System.out.println(contacts);
+
+                    phoneBook.add("petro", "7737   911", "29/06/2000", "ternopil");
+                    System.out.println(contacts);
+
                     break;
 
-                case "search":
+                case SEARCH:
                     System.out.println("Введіть будь ласка, критерій та дані за якими виконати пошук");
-                    phoneBook.search(reader.readLine(), reader.readLine());
+                    phoneBook.search("name", "taras");
                     break;
-
-                case "remove":
-                    phoneBook.remove("taras");
             }
         }
     }
 
-    private void add(String name, List<String> phone, String birth, String address) throws Exception {
-        HashMap<String, String> data = new HashMap<>();
-        List<String> phones = new ArrayList<>();
+    private static Action getAction(Action... actions) {
+        while (true) {
+            for (Action action : actions) {
+                if (action.getDescription() != null) {
+                    System.out.println(action);
+                }
+            }
 
+            String line = "";
+
+            try {
+                line = reader.readLine().toLowerCase().trim();
+                System.out.println();
+
+                for (Action action : actions) {
+                    if (line.equals(action.getName())) {
+                        return action;
+                    }
+                }
+
+                throw new IllegalArgumentException("введено некоректне значення");
+
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void add(String name, String phones, String birth, String address) {
+        HashMap<String, String> data = new HashMap<>();
         data.put("name", "");
         data.put("birthDate", "");
         data.put("address", "");
 
-        while (true) {
-            if (data.get("name").equals("")) {
-                System.out.println("Введіть, будь ласка, ваше ім'я");
-                data.put("name", name);                   //reader.readLine();
-            }
+        List<String> allPhones = new ArrayList<>();
+        LocalDate birthDate = null;
 
-            do {
-                System.out.println("Введіть номер телефону");
-                phones.addAll(phone);
-
-                if (!phones.isEmpty()) {
-                    System.out.println("Поточні номери нового контакту:");
-                    System.out.println(phones);
+        do {
+            try {
+                if (data.get("name").equals("")) {
+                    System.out.println("Введіть, будь ласка, ваше ім'я");
+                    data.put("name", name);
+                    System.out.println(name);
+                    System.out.println();
                 }
 
-                System.out.println("Бажаєте додати ще один номер телефону? (yes / no)");
-            } while (!reader.readLine().trim().equalsIgnoreCase("no"));
+                do {
+                    System.out.println("введіть номери телефонів через пробіл");
 
-            if (data.get("birthDate").equals("")) {
-                System.out.println("Введіть, будь ласка, дату народження у форматі дд/мм/рррр");
-                data.put("birthDate", birth);
+                    if (phones.equals("")) {
+                        throw new IllegalArgumentException("не введено жодного номеру телефону");
+                    }
+
+                    String[] phonesArray = phones.trim().split(" +");
+
+                    for (String phone : phonesArray) {
+                        if (!phone.matches("(\\+?)(\\d{3,15})")) {
+                            System.out.printf("Номер %s має некоректний формат", phone);
+                            continue;
+                        }
+
+                        allPhones.add(phone);
+                        System.out.println(phone);
+                        System.out.println();
+                    }
+
+                    System.out.println("поточні номери нового контакту:");
+                    System.out.println(allPhones);
+                    System.out.println();
+
+                    System.out.println("бажаєте ввести ще один номер? (yes / no)");
+                } while (getAction(Action.YES, Action.NO).equals(Action.NO));
+
+                if (data.get("birthDate").equals("")) {
+                    System.out.println("Введіть, будь ласка, дату народження у форматі дд/мм/рррр");
+                    data.put("birthDate", birth);
+                }
+
+                if (data.get("address").equals("")) {
+                    System.out.println("Введіть, будь ласка, вашу адресу");
+                    data.put("address", address);
+                }
+
+                if (!data.get("birthDate").equals("")) {
+                    birthDate = LocalDate.parse(
+                            data.get("birthDate"),
+                            DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    );
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
             }
+        } while (data.get("name").equals("") || data.get("phones").contains(""));
 
-            if (data.get("address").equals("")) {
-                System.out.println("Введіть, будь ласка, вашу адресу");
-                data.put("address", address);
-            }
-
-            LocalDate birthDate = null;
-
-            if (!data.get("birthDate").equals("")) {
-                birthDate = LocalDate.parse(
-                        data.get("birthDate"),
-                        DateTimeFormatter.ofPattern("dd/MM/yyyy")
-                );
-            }
-
-            if (data.get("name").equals("") || phones.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "На жаль, не зазначено жодного номеру телефону або імені контакту - ці дані обов'язкові"
-                );
-            } else {
-                Contact contact = new Contact(
-                        data.get("name"),
-                        birthDate,
-                        phones,
-                        data.get("address")
-                );
-                contacts.add(contact);
-                break;
-            }
-        }
+        Contact contact = new Contact(
+                data.get("name"),
+                birthDate,
+                allPhones,
+                data.get("address")
+        );
+        contacts.add(contact);
     }
 
     public void search(String fieldName, String value) throws IllegalAccessException, NoSuchFieldException {
@@ -132,19 +155,20 @@ public class PhoneBook {
             if (fieldName.equalsIgnoreCase("name") || fieldName.equalsIgnoreCase("address")) {
                 if (field.get(contact).equals(value)) {
                     buffer.add(contact);
-                    System.out.println(contact);
                 }
+
             } else if (fieldName.equalsIgnoreCase("phones")) {
                 if (((ArrayList<?>) field.get(contact)).contains(value)) {
                     buffer.add(contact);
-                    System.out.println(contact);
                 }
+
             } else if (fieldName.equalsIgnoreCase("birthDate")) {
                 if (String.valueOf(contact.birthDate).equals(value)) {
                     buffer.add(contact);
-                    System.out.println(contact);
                 }
             }
+
+            System.out.println(contact);
         }
     }
 
@@ -216,5 +240,49 @@ public class PhoneBook {
                     ", edited=" + edited +
                     '}';
         }
+    }
+
+    private enum Action {
+        YES("yes"),
+        NO("no"),
+        EXIT("exit"),
+
+        ADD("add", "додати контакт"),
+        REMOVE("remove", "видалити контакт"),
+        SEARCH("search", "пошук контактів"),
+        PRINT("print"),
+        EDIT("etid"),
+        WRITE("write"),
+        LOAD("load", "завантажити дані зі файлу");
+
+        private final String name;
+        private String description;
+
+        Action(String name) {
+            this.name = name;
+        }
+
+        Action(String name, String description) {
+            this.name = name;
+            this.description = description;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        @Override
+        public String toString() {
+            if (description == null) {
+                return getName();
+            }
+
+            return String.format("%s - %s" ,getName(), getDescription());
+        }
+
     }
 }
