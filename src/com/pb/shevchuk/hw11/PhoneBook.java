@@ -7,10 +7,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PhoneBook {
     private static final List<Contact> contacts = new ArrayList<>();
-    private static final Map<Integer, Contact> buffer = new HashMap<>();
+    private static final List<Contact> buffer = new ArrayList<>();
     public static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws Exception {
@@ -31,16 +33,16 @@ public class PhoneBook {
         }
 
 //        while (true) {
-            System.out.println("оберіть дію:");
             System.out.println(
-                    "add - додати контакт\n" +
-                    "load - завантажити дані зі файлу\n" +
-                    "search - пошук контактів\n" +
-                    "remove - видалити контакт\n" +
-                    "print - \n" +
-                    "etid - \n" +
-                    "write - \n" +
-                    "exit - "
+                    "оберіть дію:\n" +
+                        "add - додати контакт\n" +
+                        "load - завантажити дані зі файлу\n" +
+                        "search - пошук контактів\n" +
+                        "remove - видалити контакт\n" +
+                        "print - \n" +
+                        "etid - \n" +
+                        "write - \n" +
+                        "exit - "
             );
 
 //            switch (reader.readLine().toLowerCase().trim()) {
@@ -48,23 +50,28 @@ public class PhoneBook {
 //
 //                    break;
 
-            switch ("search") {
-                case "search":
+            switch ("print") {
+                case "print":
                     System.out.println();
                     phoneBook.add("taras", "3700", "1995-08-29", "ternopil");
-                    phoneBook.add("petro", "7737   911", "2000-06-29", "ternopil");
+                    phoneBook.add("petro", "7737   911", "1990-08-29", "ternopil");
                     System.out.println(contacts);
                     System.out.println();
 
-                    System.out.println("Введіть критерій та дані за якими виконати пошук");
-                    System.out.println("3700");
-                    phoneBook.search("edited", "2021-12-12");
-                    System.out.println();
-                    System.out.println(buffer);
+                    phoneBook.print();
+                    break;
 
+                case "remove":
+                    phoneBook.remove();
                     break;
             }
 //        }
+    }
+
+    public static void printBuffer() {
+        for (int i = 0; i < buffer.size(); i++) {
+            System.out.println((i + 1) + " - " + buffer.get(i));
+        }
     }
 
     private void add(String name, String phones, String birth, String address) {
@@ -78,6 +85,7 @@ public class PhoneBook {
 
                 System.out.println(name);
                 System.out.println();
+
             } catch (IllegalArgumentException e) {
                 System.out.println(e.getMessage());
             }
@@ -146,50 +154,110 @@ public class PhoneBook {
         contacts.add(contact);
     }
 
-    public void search(String fieldName, String value) throws IllegalAccessException, NoSuchFieldException {
-        Class<?> clazz = contacts.get(0).getClass();
-        Field field;
-        field = clazz.getDeclaredField(fieldName);
-        field.setAccessible(true);
+    public void search(String fieldName, String value) {
+        System.out.println(
+                "оберіть критерій пошуку:\n" +
+                        "name - за іменем\n" +
+                        "за номером телефону\n" +
+                        "birthDate - за датою народження\n" +
+                        "address - за адресою\n" +
+                        "edited - за датою редагування\n"
+        );
 
-        buffer.clear();
+        System.out.println("введіть дані для пошуку");
+        System.out.println();
 
-        for (Contact contact : contacts) {
-            Object prop = field.get(contact);
+        Class<Contact> clazz = Contact.class;
 
-            if (prop instanceof String) {
-                if (prop.equals(value)) {
-                    buffer.put(buffer.size() + 1, contact);
-                }
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+            field.setAccessible(true);
 
-            } else if (prop instanceof ArrayList<?>) {
-                if (((ArrayList<?>) prop).contains(value)) {
-                    buffer.put(buffer.size() + 1, contact);
-                }
+            buffer.clear();
 
-            } else if (prop instanceof LocalDate) {
-                if (String.valueOf(prop).equals(value)) {
-                    buffer.put(buffer.size() + 1, contact);
-                }
+            for (Contact contact : contacts) {
+                Object prop = field.get(contact);
 
-            } else if (prop instanceof LocalDateTime) {
-                String date = ((LocalDateTime) prop).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                if (prop instanceof String) {
+                    if (prop.equals(value)) {
+                        buffer.add(contact);
+                    }
 
-                if (date.equals(value)) {
-                    buffer.put(buffer.size() + 1, contact);
+                } else if (prop instanceof ArrayList<?>) {
+                    if (((ArrayList<?>) prop).contains(value)) {
+                        buffer.add(contact);
+                    }
+
+                } else if (prop instanceof LocalDate) {
+                    if (String.valueOf(prop).equals(value)) {
+                        buffer.add(contact);
+                    }
+
+                } else if (prop instanceof LocalDateTime) {
+                    String date = ((LocalDateTime) prop).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                    if (date.equals(value)) {
+                        buffer.add(contact);
+                    }
                 }
             }
+
+            if (!buffer.isEmpty()) {
+                System.out.println("результати пошуку:");
+
+                printBuffer();
+                System.out.println();
+            }
+        } catch (NoSuchFieldException e) {
+            System.out.println("введено помикловий критерій пошуку");
+
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
+    public void remove() {
+        if (buffer.isEmpty()) {
+            System.out.println("address, ternopil");
+            System.out.println();
+            this.search("address", "ternopil");
+        }
 
+        System.out.println("введіть номер контакту, який бажаєте видалити");
+        System.out.println();
+        int index = 1;
 
-//    public void remove(String name) {
-//        Contact con = contacts.get(1);
-//        con.name = "dot";
-//        contacts.set(1, con);
-//        contacts.removeIf(c -> c.name.equals(name));
-//    }
+        contacts.remove(buffer.get(index - 1));
+        buffer.remove(index - 1);
+        System.out.println("контакт видалено");
+    }
+
+    public void print() {
+        String field = "birthDate";
+
+        if (field.equals("name")) {
+            contacts.sort(new Comparator<Contact>() {
+                @Override
+                public int compare(Contact o1, Contact o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            });
+        } else if (field.equals("birthDate")) {
+            contacts.sort(new Comparator<Contact>() {
+                @Override
+                public int compare(Contact o1, Contact o2) {
+                    return o1.birthDate.compareTo(o2.birthDate);
+                }
+            });
+        } else {
+            System.out.println("введено некоректне поле");
+            return;
+        }
+
+        buffer.clear();
+        buffer.addAll(contacts);
+        printBuffer();
+    }
 
     public class Contact {
         private String name;
@@ -244,13 +312,11 @@ public class PhoneBook {
 
         @Override
         public String toString() {
-            return "Contact{" +
-                    "name='" + name + '\'' +
-                    ", birthDate=" + birthDate +
-                    ", phones='" + phones + '\'' +
-                    ", address='" + address + '\'' +
-                    ", edited=" + edited +
-                    '}';
+            return "ім'я=" + name +
+                   ", дата народження=" + birthDate +
+                   ", номер=" + phones +
+                   ", адреса=" + address +
+                   ", редаговано=" + edited;
         }
     }
 }
