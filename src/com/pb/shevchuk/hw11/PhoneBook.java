@@ -1,9 +1,14 @@
 package com.pb.shevchuk.hw11;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+
+import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,7 +39,7 @@ public class PhoneBook {
 
             switch (command) {
                 case "add":
-                    phoneBook.add("taras", "3700", "29/08/1995", "ternopil");
+                    phoneBook.add("sarat", "3700", "29/08/1995", "ternopil");
                     phoneBook.add("petro", "7737", "29/06/2000", "ternopil");
 
                     break;
@@ -55,7 +60,7 @@ public class PhoneBook {
             "яку дію із контактами бажаєте виконати?\n" +
             String.join("\n\t", "\tadd", "load", "sort", "search", "edit", "remove", "write", "exit")
         );
-        String line = "search";
+        String line = "write";
         System.out.println(line);
         System.out.println();
 
@@ -85,7 +90,7 @@ public class PhoneBook {
                 break;
 
             case "write":
-//                phoneBook.write();
+                phoneBook.write();
                 break;
 
             case "exit":
@@ -351,9 +356,22 @@ public class PhoneBook {
         }
     }
 
-//    public void write() {
-//
-//    }
+    public void write() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(LocalDate.class, new LocalDateSerializer());
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        mapper.registerModule(module);
+
+        File file = Paths.get("src/com/pb/shevchuk/hw11/contacts.data").toFile();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            String json = mapper.writeValueAsString(contacts);
+            writer.write(json);
+        }
+    }
 
     public void remove() {
         if (buffer.isEmpty()) {
@@ -385,6 +403,7 @@ public class PhoneBook {
 
     private class Contact {
         private String name;
+        @JsonSerialize
         private final List<String> phones;
         private LocalDate birthDay;
         private String address;
