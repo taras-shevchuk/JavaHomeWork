@@ -11,16 +11,15 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class PhoneBook {
-    private static final List<Contact> contacts = new ArrayList<>();
-    private static final List<Contact> buffer = new ArrayList<>();
-
-    public static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final List<Contact> contacts = new ArrayList<>();
+    private final List<Contact> buffer = new ArrayList<>();
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     public static void main(String[] args) throws Exception {
         PhoneBook phoneBook = new PhoneBook();
         System.out.println("Вітаємо вас!");
 
-        while (contacts.isEmpty()) {
+        while (phoneBook.isEmpty()) {
             System.out.println("У телефонній книзі поки немає контактів");
             System.out.println();
 
@@ -29,30 +28,26 @@ public class PhoneBook {
                     "\tadd\n" +
                     "\tload"
             );
-            System.out.println();
-
             String command = "add";
             System.out.println(command);
             System.out.println();
+
             switch (command) {
                 case "add":
                     phoneBook.add("taras", "3700", "29/08/1995", "ternopil");
-                    buffer.clear();
-                    buffer.addAll(contacts);
-                    printBuffer();
-                    System.out.println();
-
                     phoneBook.add("petro", "7737", "29/06/2000", "ternopil");
-                    buffer.clear();
-                    buffer.addAll(contacts);
-                    printBuffer();
-                    System.out.println();
 
                     break;
 
                 case "load":
 //                    load();
                     break;
+
+                case "exit":
+                    return;
+
+                default:
+                    System.out.println("введено некоректну команду");
             }
         }
 
@@ -61,7 +56,7 @@ public class PhoneBook {
             String.join("\n\t", "\tadd", "load", "sort", "search", "edit", "remove", "write", "exit")
         );
 
-        String line = "search";
+        String line = "edit";
         System.out.println(line);
         System.out.println();
         switch (line) {
@@ -82,7 +77,7 @@ public class PhoneBook {
                 break;
 
             case "edit":
-//                phoneBook.edit();
+                phoneBook.edit();
                 break;
 
             case "remove":
@@ -110,17 +105,21 @@ public class PhoneBook {
 //        }
     }
 
-    private static String readLine() throws IOException {
+    public boolean isEmpty() {
+        return contacts.isEmpty();
+    }
+
+    public String readLine() throws IOException {
         return reader.readLine().trim().toLowerCase();
     }
 
-    private static void printBuffer() {
+    private void printBuffer() {
         for (int i = 0; i < buffer.size(); i++) {
             System.out.printf("%d - %s\n", (i + 1), buffer.get(i));
         }
     }
 
-    private void add(String name, String phone, String date, String address) throws Exception {
+    public void add(String name, String phone, String date, String address) throws Exception {
         do {
             System.out.println("введіть, будь ласка, ваше ім'я");
             System.out.println(name);
@@ -163,12 +162,12 @@ public class PhoneBook {
                 System.out.println();
             }
         } while (phones.isEmpty());
-//        } while (!((phone = reader.readLine()).equals("next") && !phones.isEmpty()));
+//        } while (!((phone = readLine()).equals("next") && !phones.isEmpty()));
 
         LocalDate birthDay = null;
 
         try {
-            System.out.println("введіть дату народження (формат д/мм/рррр)");
+            System.out.println("введіть дату народження (формат дд/мм/рррр)");
             birthDay = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/MM/yyyy"));
             System.out.println(birthDay.format(DateTimeFormatter.ofPattern("d/MM/yyyy")));
             System.out.println();
@@ -183,6 +182,8 @@ public class PhoneBook {
 
         Contact contact = new Contact(name, birthDay, phones, address);
         contacts.add(contact);
+        System.out.println("контакт додано у телефону книгу");
+        System.out.println();
     }
 
     public void sort() {
@@ -219,16 +220,16 @@ public class PhoneBook {
         printBuffer();
     }
 
-    public void search() throws IllegalAccessException {
+    public void search() {
         buffer.clear();
 
-        System.out.println("введіть дані для пошуку");
-        String value = "2:";
-        System.out.println(value);
+        System.out.println("введіть дані для пошуку контактів");
+        String line = "ternopil";
+        System.out.println(line);
         System.out.println();
 
         try {
-            if (value.equals("")) {
+            if (line.equals("")) {
                 throw new IllegalArgumentException("дані не введені");
             }
         } catch (IllegalArgumentException e) {
@@ -239,28 +240,35 @@ public class PhoneBook {
         Class<Contact> clazz = Contact.class;
 
         for (Contact contact : contacts) {
-            List<String> strings = new ArrayList<>();
+            List<String> values = new ArrayList<>();
 
             for (Field field : clazz.getDeclaredFields()) {
                 field.setAccessible(true);
-                Object prop = field.get(contact);
+                Object prop;
+
+                try {
+                    prop = field.get(contact);
+
+                } catch (IllegalAccessException e) {
+                    continue;
+                }
 
                 if (prop instanceof String) {
-                    strings.add((String) prop);
+                    values.add((String) prop);
 
                 } else if (prop instanceof List<?>) {
-                    strings.addAll(contact.getPhones());
+                    values.addAll(contact.getPhones());
 
                 } else if (prop instanceof LocalDate) {
-                    strings.add(contact.getBirthDay("d/MM/yyyy"));
+                    values.add(contact.getBirthDay("d/MM/yyyy"));
 
                 } else if (prop instanceof LocalDateTime) {
-                    strings.add(contact.getEdited("d/MM/yyyy о H:mm"));
+                    values.add(contact.getEdited("d/MM/yyyy о H:mm"));
                 }
             }
 
-            for (String string : strings) {
-                if (string.contains(value)) {
+            for (String value : values) {
+                if (value.contains(line)) {
                     buffer.add(contact);
                     break;
                 }
@@ -277,59 +285,70 @@ public class PhoneBook {
         }
     }
 
-//    public void edit() throws NoSuchFieldException, IllegalAccessException {
-//        if (buffer.isEmpty()) {
-//            System.out.println("address, ternopil");
-//            System.out.println();
-//            this.search("address", "ternopil");
-//        }
-//
-//        System.out.println("оберіть контакт для редагування");
-//        int index = 0;
-//
-//        try {
-//            Contact contact = contacts.get(index);
-//
-//            System.out.println("які дані бажаєте редагувати?");
-//            System.out.println(contact);
-//
-//            String fieldName = "phones";
-//            String value = "777";
-//
-//            Class<Contact> clazz = Contact.class;
-//            Field field = clazz.getDeclaredField(fieldName);
-//
-//            if (!fieldName.equals("edited")) {
-//                field.setAccessible(true);
-//            }
-//
-//            Object prop = field.get(contact);
-//
-//            if (prop instanceof String) {
-//                field.set(contact, value);
-//
-//            } else if (prop instanceof LocalDate) {
-//                LocalDate newDate = LocalDate.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-//                field.set(contact, newDate);
-//
-//            } else if (prop instanceof List<?>) {
-//                ArrayList<String> phones = (ArrayList<String>) prop;
-//                System.out.println("який номер бажаєте редагувати?");
-//
-//                for (int i = 0; i < phones.size(); i++) {
-//                    System.out.printf("%d - %s", (i + 1), phones.get(i));
-//                    System.out.println();
-//                }
-//
-//                phones.set(index, value);
-//            }
-//
-//            System.out.println(contact);
-//
-//        } catch (IndexOutOfBoundsException e) {
-//            System.out.println("введено помилковий порядковий номер");
-//        }
-//    }
+    public void edit() {
+        if (buffer.isEmpty()) {
+            search();
+
+            if (buffer.isEmpty()) return;
+        }
+
+        System.out.println("оберіть контакт для редагування");
+        int index = 1;
+        Contact contact;
+
+        try {
+            contact = buffer.get(index);
+            System.out.println(contact);
+            System.out.println();
+
+            System.out.println(
+                    "оберіть поле для редагування\n" +
+                    String.join("\n\t", Arrays.asList("\tname", "birthDate", "phone", "address"))
+            );
+            String fieldName = "phone";
+            System.out.println(fieldName);
+            System.out.println();
+
+            String newValue = "579";
+
+            if (fieldName.equals("name")) {
+                contact.setName(newValue);
+
+            } else if (fieldName.equals("phone")) {
+                System.out.println("який номер бажаєте редагувати?");
+
+                for (int i = 0; i < contact.phones.size(); i++) {
+                    System.out.printf("%d - %s\n", (i + 1), contact.phones.get(i));
+                    System.out.println();
+                }
+
+                int i = 1;
+                contact.setPhone(i, newValue);
+
+            } else if (fieldName.equals("birthday")) {
+                contact.setBirthDay(newValue);
+
+            } else if (fieldName.equals("address")) {
+                contact.setAddress(newValue);
+
+            } else {
+                throw new IllegalArgumentException("поле для редагування введено помилково");
+            }
+
+            System.out.println(newValue);
+            System.out.println();
+
+            contact.edited = LocalDateTime.now();
+            System.out.println("дані редаговано");
+            System.out.println(contact);
+
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("введено помилковий порядковий номер");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 //    public void write() {
 //
@@ -394,14 +413,20 @@ public class PhoneBook {
         }
 
         public void setBirthDay(String date) throws DateTimeParseException {
-            this.birthDay = LocalDate.parse(date, DateTimeFormatter.ofPattern("дд/мм/рррр"));
+            this.birthDay = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/MM/yyyy"));
         }
 
-        public List<String> getPhones() {
+        private List<String> getPhones() {
             return phones;
         }
 
-        public void setPhone(String phone) throws IllegalArgumentException {
+        private void addPhone(String phone) {
+            int index = getPhones().size();
+
+            setPhone(index, phone);
+        }
+
+        private void setPhone(int index, String phone) throws IllegalArgumentException {
             if (!phone.matches("\\d{3,12}")) {
                 throw new IllegalArgumentException("введено некоректні дані. Номер має містити від 3 до 12 цифр");
             }
@@ -412,7 +437,7 @@ public class PhoneBook {
                 }
             }
 
-            phones.add(phone);
+            phones.set(index, phone);
         }
 
         public String getAddress() {
