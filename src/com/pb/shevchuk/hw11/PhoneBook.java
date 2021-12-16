@@ -55,10 +55,10 @@ public class PhoneBook {
             "яку дію із контактами бажаєте виконати?\n" +
             String.join("\n\t", "\tadd", "load", "sort", "search", "edit", "remove", "write", "exit")
         );
-
-        String line = "edit";
+        String line = "search";
         System.out.println(line);
         System.out.println();
+
         switch (line) {
             case "add":
 //                phoneBook.add();
@@ -81,7 +81,7 @@ public class PhoneBook {
                 break;
 
             case "remove":
-//                phoneBook.remove();
+                phoneBook.remove();
                 break;
 
             case "write":
@@ -180,7 +180,7 @@ public class PhoneBook {
         System.out.println(address);
         System.out.println();
 
-        Contact contact = new Contact(name, birthDay, phones, address);
+        Contact contact = new Contact(name, phones, birthDay, address);
         contacts.add(contact);
         System.out.println("контакт додано у телефону книгу");
         System.out.println();
@@ -240,7 +240,7 @@ public class PhoneBook {
         Class<Contact> clazz = Contact.class;
 
         for (Contact contact : contacts) {
-            List<String> values = new ArrayList<>();
+            Set<String> values = new HashSet<>();
 
             for (Field field : clazz.getDeclaredFields()) {
                 field.setAccessible(true);
@@ -277,6 +277,7 @@ public class PhoneBook {
 
         if (buffer.isEmpty()) {
             System.out.println("контактів не знайдено");
+
         } else {
             System.out.println("результати пошуку:");
 
@@ -322,7 +323,7 @@ public class PhoneBook {
                     System.out.println();
                 }
 
-                int i = 1;
+                int i = 0;
                 contact.setPhone(i, newValue);
 
             } else if (fieldName.equals("birthday")) {
@@ -354,38 +355,45 @@ public class PhoneBook {
 //
 //    }
 
-//    public void remove() {
-//        if (buffer.isEmpty()) {
-//            System.out.println("address, ternopil");
-//            System.out.println();
-//            this.search();
-//        }
-//
-//        System.out.println("введіть номер контакту, який бажаєте видалити");
-//        System.out.println();
-//        int index = 3;
-//
-//        try {
-//            contacts.remove(buffer.get(index - 1));
-//            buffer.remove(index - 1);
-//            System.out.println("контакт видалено");
-//
-//        } catch (IndexOutOfBoundsException e) {
-//            System.out.println("введено помилковий порядковий номер");
-//        }
-//    }
+    public void remove() {
+        if (buffer.isEmpty()) {
+            this.search();
+
+            if (buffer.isEmpty()) return;
+        }
+
+        System.out.println("введіть номер контакту, який бажаєте видалити");
+        System.out.println();
+        int index = 1;
+
+        try {
+            contacts.remove(buffer.get(index - 1));
+            buffer.remove(index - 1);
+            System.out.println("контакт видалено");
+
+            printBuffer();
+            System.out.println();
+
+            buffer.clear();
+            buffer.addAll(contacts);
+            printBuffer();
+
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("введено помилковий порядковий номер");
+        }
+    }
 
     private class Contact {
         private String name;
-        private LocalDate birthDay;
         private final List<String> phones;
+        private LocalDate birthDay;
         private String address;
         private LocalDateTime edited;
 
-        public Contact(String name, LocalDate birthDay, List<String> phones, String address) {
+        public Contact(String name, List<String> phones, LocalDate birthDay, String address) {
             this.name = name;
-            this.birthDay = birthDay;
             this.phones = phones;
+            this.birthDay = birthDay;
             this.address = address;
             edited = LocalDateTime.now();
         }
@@ -402,27 +410,12 @@ public class PhoneBook {
             this.name = name;
         }
 
-        public LocalDate getBirthDay() {
-            return birthDay;
-        }
-
-        public String getBirthDay(String pattern) {
-            return (birthDay != null) ?
-                    birthDay.format(DateTimeFormatter.ofPattern(pattern)) :
-                    "none";
-        }
-
-        public void setBirthDay(String date) throws DateTimeParseException {
-            this.birthDay = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/MM/yyyy"));
-        }
-
         private List<String> getPhones() {
             return phones;
         }
 
         private void addPhone(String phone) {
             int index = getPhones().size();
-
             setPhone(index, phone);
         }
 
@@ -440,12 +433,31 @@ public class PhoneBook {
             phones.set(index, phone);
         }
 
+        public LocalDate getBirthDay() {
+            return birthDay;
+        }
+
+        public String getBirthDay(String pattern) {
+            return (birthDay != null) ?
+                    birthDay.format(DateTimeFormatter.ofPattern(pattern)) :
+                    "none";
+        }
+
+        public void setBirthDay(String date) throws DateTimeParseException {
+            LocalDate newDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/MM/yyyy"));
+            setBirthDay(newDate);
+        }
+
+        public void setBirthDay(LocalDate date) {
+            this.birthDay = date;
+        }
+
         public String getAddress() {
             return address;
         }
 
         public void setAddress(String address) {
-            this.address = address;
+            this.address = (!address.trim().equals("")) ? address : "none";
         }
 
         public LocalDateTime getEdited() {
