@@ -1,6 +1,7 @@
 package com.pb.shevchuk.hw11;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -8,17 +9,20 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class PhoneBook {
     private final List<Contact> contacts = new ArrayList<>();
     private final List<Contact> buffer = new ArrayList<>();
     private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final File FILE = Paths.get("src/com/pb/shevchuk/hw11/contacts.json").toFile();
 
     public static void main(String[] args) throws Exception {
         PhoneBook phoneBook = new PhoneBook();
@@ -39,7 +43,7 @@ public class PhoneBook {
 
             switch (command) {
                 case "add":
-                    phoneBook.add("sarat", "3700", "29/08/1995", "ternopil");
+                    phoneBook.add("taras", "3700", "29/08/1995", "ternopil");
                     phoneBook.add("petro", "7737", "29/06/2000", "ternopil");
 
                     break;
@@ -191,6 +195,39 @@ public class PhoneBook {
         System.out.println();
     }
 
+    public void load() throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+        module.addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer());
+        mapper.registerModule(module);
+
+        List<?> newContacts = mapper.readValue(FILE, List.class);
+
+        for (Object o : newContacts) {
+            Contact newContact = (Contact) o;
+            List<String> phones = newContact.phones;
+
+            for (Contact contact : contacts) {
+                if (Collections.disjoint(phones, contact.phones)) {
+                    contacts.add(newContact);
+                    System.out.println("контакти завантажено");
+
+                } else {
+                    System.out.printf(
+                        "контакт %s не збережено, %s уже зареєстровано",
+                        newContact.name,
+                        phones.retainAll(contact.phones)
+                    );
+                }
+            }
+        }
+
+        System.out.println(contacts);
+        System.out.println(newContacts);
+    }
+
     public void sort() {
         System.out.println(
                 "введіть критерій для сортування:\n" +
@@ -268,7 +305,7 @@ public class PhoneBook {
                     values.add(contact.getBirthDay("d/MM/yyyy"));
 
                 } else if (prop instanceof LocalDateTime) {
-                    values.add(contact.getEdited("d/MM/yyyy о H:mm"));
+                    values.add(contact.getEdited("d/MM/yyyy, H:mm"));
                 }
             }
 
@@ -365,12 +402,10 @@ public class PhoneBook {
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         mapper.registerModule(module);
 
-        File file = Paths.get("src/com/pb/shevchuk/hw11/contacts.data").toFile();
+        mapper.writeValue(FILE, contacts);
+        System.out.println("контакти записано у файл");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            String json = mapper.writeValueAsString(contacts);
-            writer.write(json);
-        }
+        load();
     }
 
     public void remove() {
@@ -400,105 +435,5 @@ public class PhoneBook {
             System.out.println("введено помилковий порядковий номер");
         }
     }
-
-    private class Contact {
-        private String name;
-        @JsonSerialize
-        private final List<String> phones;
-        private LocalDate birthDay;
-        private String address;
-        private LocalDateTime edited;
-
-        public Contact(String name, List<String> phones, LocalDate birthDay, String address) {
-            this.name = name;
-            this.phones = phones;
-            this.birthDay = birthDay;
-            this.address = address;
-            edited = LocalDateTime.now();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) throws IllegalArgumentException {
-            if (name.equals("")) {
-                throw new IllegalArgumentException("ім'я не введено");
-            }
-
-            this.name = name;
-        }
-
-        private List<String> getPhones() {
-            return phones;
-        }
-
-        private void addPhone(String phone) {
-            int index = getPhones().size();
-            setPhone(index, phone);
-        }
-
-        private void setPhone(int index, String phone) throws IllegalArgumentException {
-            if (!phone.matches("\\d{3,12}")) {
-                throw new IllegalArgumentException("введено некоректні дані. Номер має містити від 3 до 12 цифр");
-            }
-
-            for (Contact contact : contacts) {
-                if (contact.phones.contains(phone)) {
-                    throw new IllegalArgumentException("такий номер уже зареєстрований");
-                }
-            }
-
-            phones.set(index, phone);
-        }
-
-        public LocalDate getBirthDay() {
-            return birthDay;
-        }
-
-        public String getBirthDay(String pattern) {
-            return (birthDay != null) ?
-                    birthDay.format(DateTimeFormatter.ofPattern(pattern)) :
-                    "none";
-        }
-
-        public void setBirthDay(String date) throws DateTimeParseException {
-            LocalDate newDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/MM/yyyy"));
-            setBirthDay(newDate);
-        }
-
-        public void setBirthDay(LocalDate date) {
-            this.birthDay = date;
-        }
-
-        public String getAddress() {
-            return address;
-        }
-
-        public void setAddress(String address) {
-            this.address = (!address.trim().equals("")) ? address : "none";
-        }
-
-        public LocalDateTime getEdited() {
-            return edited;
-        }
-
-        public String getEdited(String pattern) {
-            return (edited != null) ?
-                    edited.format(DateTimeFormatter.ofPattern(pattern)) :
-                    "none";
-        }
-
-        @Override
-        public String toString() {
-            return String.format(
-                    "%s, номери телефонів: %s, дата народження %s, адреса - %s, редаговано - %s",
-                    name,
-                    phones,
-                    getBirthDay("d/MM/yyyy"),
-                    address,
-                    getEdited("d/MM/yyyy о H:mm")
-            );
-        }
-    }
 }
+
