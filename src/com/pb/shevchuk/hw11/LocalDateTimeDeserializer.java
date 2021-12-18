@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
@@ -17,6 +18,6 @@ public class LocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
 
     @Override
     public LocalDateTime deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
-        return LocalDateTime.parse(jp.readValueAs(String.class));
+        return LocalDateTime.parse(jp.readValueAs(String.class), DateTimeFormatter.ofPattern("d/MM/yyyy, H:mm"));
     }
 }
