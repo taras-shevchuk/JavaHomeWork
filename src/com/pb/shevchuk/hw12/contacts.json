@@ -1,0 +1,13 @@
+[ {
+  "name" : "petro",
+  "phones" : [ "7737" ],
+  "birthday" : "18/09/1990",
+  "address" : "ternopil",
+  "edited" : "20/12/2021, 16:14"
+}, {
+  "name" : "taras",
+  "phones" : [ "3700" ],
+  "birthday" : "29/08/1995",
+  "address" : "ternopil",
+  "edited" : "18/12/2021, 2:24"
+} ]
