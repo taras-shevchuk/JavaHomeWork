@@ -9,15 +9,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    public static void main(String[] args) throws IOException {
-        int port = 25000;
-        ServerSocket serverSocket = new ServerSocket(port);
-        Socket socket = serverSocket.accept();
-        Socket socket1 = serverSocket.accept();
+    public static final int port = 25000;
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(2);
-        threadPool.submit(new Handler(socket));
-        threadPool.submit(new Handler(socket1));
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(port);
+        System.out.println("server start");
+        ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            threadPool.submit(new Handler(clientSocket));
+        }
     }
 
     static class Handler implements Runnable {
@@ -30,11 +32,13 @@ public class Server {
         @Override
         public void run() {
             try (
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)
+                    );
                     PrintWriter writer = new PrintWriter(
                             new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8),
                             true
-                    );
+                    )
             ) {
                 String message;
                 while ((message = reader.readLine()) != null) {
