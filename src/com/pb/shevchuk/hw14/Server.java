@@ -3,6 +3,7 @@ package com.pb.shevchuk.hw14;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -12,10 +13,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
-    public static final int port = 25000;
+    public static final int PORT = 25000;
+    public static final Charset UTF8 = StandardCharsets.UTF_8;
 
     public static void main(String[] args) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
+        ServerSocket serverSocket = new ServerSocket(PORT);
         ExecutorService threadPool = Executors.newFixedThreadPool(10);
         threadPool.submit(new Sender());
 
@@ -35,14 +37,9 @@ public class Server {
         private final PrintWriter writer;
 
         public Receiver(Socket socket) throws IOException {
-            reader = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)
-            );
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), UTF8));
             clientName = reader.readLine();
-            writer = new PrintWriter(
-                    new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8),
-                    true
-            );
+            writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), UTF8), true);
         }
 
         @Override
@@ -50,7 +47,7 @@ public class Server {
             try {
                 String message;
                 while ((message = reader.readLine()) != null) {
-                    messages.add(String.format("%s  ----  %s: %s", LocalDateTime.now(), clientName, message));
+                    messages.add(String.format("%s - %s  ----  %s", clientName, LocalDateTime.now(), message));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
